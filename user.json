@@ -1,0 +1,402 @@
+{
+    "newApiSignTime": 86400,
+    "list": [
+        {
+            "changeTime": 0,
+            "isOpen": false,
+            "children": [
+                {
+                    "changeTime": 0,
+                    "item": "发送验证码",
+                    "isCheck": false,
+                    "parametes": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "mobile",
+                            "remarks": "手机号",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "int",
+                            "fill": true,
+                            "key": "type",
+                            "remarks": "类型，1修改密码 2、登录验证 3、忘记密码",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createTime": 1587355213832,
+                    "header": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "token",
+                            "remarks": "",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createUser": "杨磊",
+                    "type": "POST",
+                    "resultExample": "",
+                    "url": "/api/smsVerifityCode/sendMessage",
+                    "remarks": "",
+                    "group": "验证码相关"
+                }
+            ],
+            "header": [
+                {
+                    "isCheck": true,
+                    "changeInfo": {
+                        "type": 0,
+                        "fill": 0,
+                        "remarks": 0,
+                        "exampleValue": 0
+                    },
+                    "type": "String",
+                    "fill": true,
+                    "key": "token",
+                    "remarks": "",
+                    "exampleValue": ""
+                }
+            ],
+            "lastApiCreateTime": 1587355213832,
+            "createUser": "",
+            "group": "验证码相关",
+            "rootUrl": "/api/smsVerifityCode"
+        },
+        {
+            "changeTime": 0,
+            "isOpen": false,
+            "children": [
+                {
+                    "changeTime": 0,
+                    "item": "用户登录",
+                    "isCheck": false,
+                    "parametes": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "int",
+                            "fill": true,
+                            "key": "id",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "ad_name",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "ad_url",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "int",
+                            "fill": true,
+                            "key": "ad_type",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "int",
+                            "fill": true,
+                            "key": "put_user_id",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "start_time",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "end_time",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "create_time",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "modify_time",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "int",
+                            "fill": true,
+                            "key": "status",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "int",
+                            "fill": true,
+                            "key": "ad_device_type",
+                            "remarks": "",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "put_community",
+                            "remarks": "",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createTime": 1587355213832,
+                    "header": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "token",
+                            "remarks": "",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createUser": "杨磊",
+                    "type": "POST",
+                    "resultExample": "",
+                    "url": "/api/user/login",
+                    "remarks": "",
+                    "group": "用户相关"
+                },
+                {
+                    "changeTime": 0,
+                    "item": "验证码登录",
+                    "isCheck": false,
+                    "parametes": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "mobile",
+                            "remarks": "用户登录账号",
+                            "exampleValue": ""
+                        },
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "identifyCode",
+                            "remarks": "手机验证码",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createTime": 1587355213832,
+                    "header": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "token",
+                            "remarks": "",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createUser": "杨磊",
+                    "type": "POST",
+                    "resultExample": "",
+                    "url": "/api/user/codelogin",
+                    "remarks": "",
+                    "group": "用户相关"
+                },
+                {
+                    "changeTime": 0,
+                    "item": "获取用户住房列表",
+                    "isCheck": false,
+                    "parametes": [],
+                    "createTime": 1587355213832,
+                    "header": [
+                        {
+                            "isCheck": true,
+                            "changeInfo": {
+                                "type": 0,
+                                "fill": 0,
+                                "remarks": 0,
+                                "exampleValue": 0
+                            },
+                            "type": "String",
+                            "fill": true,
+                            "key": "token",
+                            "remarks": "",
+                            "exampleValue": ""
+                        }
+                    ],
+                    "createUser": "杨磊",
+                    "type": "GET",
+                    "resultExample": "",
+                    "url": "/api/user/house/list",
+                    "remarks": "",
+                    "group": "用户相关"
+                }
+            ],
+            "header": [
+                {
+                    "isCheck": true,
+                    "changeInfo": {
+                        "type": 0,
+                        "fill": 0,
+                        "remarks": 0,
+                        "exampleValue": 0
+                    },
+                    "type": "String",
+                    "fill": true,
+                    "key": "token",
+                    "remarks": "",
+                    "exampleValue": ""
+                }
+            ],
+            "lastApiCreateTime": 1587355213832,
+            "createUser": "",
+            "group": "用户相关",
+            "rootUrl": "/api/user"
+        }
+    ],
+    "directory": "用户端",
+    "rootUrl": "http://192.168.3.15:9096/api/"
+}
