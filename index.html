@@ -1,0 +1,1352 @@
+<title>觅文档</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- <script src="js/http.js"></script> -->
+<script src="js/utils.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/httpweb.js"></script>
+<script src="js/clipboard.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<style>
+    @font-face {
+        font-family: 'zhankukuhei';
+        src: url("font/zhankukuhei.ttf");
+    }
+
+    body {
+        font-family: Monaco, Menlo, Ubuntu Mono, Consolas, source-code-pro, monospace, 楷体_GB2312;
+    }
+
+    .mallText {
+        -webkit-transform: scale(0.7);
+    }
+
+    .selectBack {
+        background-color: #ffffff09
+    }
+
+    .scrollbar {
+        width: 30px;
+        height: 300px;
+        margin: 0 auto;
+    }
+
+    .myScrollbar::-webkit-scrollbar {
+        width: 10px;
+        height: 1px;
+    }
+
+    .myScrollbar::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 5px #ffffff22;
+        background: #ffffff22;
+
+    }
+
+    .myScrollbar::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 5px #ffffff22;
+        border-radius: 10px;
+        background: #ffffff22;
+    }
+
+    .myScrollbar2::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+
+    .myScrollbar2::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 5px #ffffff22;
+        background: #ffffff22;
+
+    }
+
+    .myScrollbar2::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 5px #ffffff22;
+        border-radius: 10px;
+        background: #ffffff22;
+    }
+
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity .3s;
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+        opacity: 0;
+    }
+
+    .fade1-enter-active,
+    .fade1-leave-active {
+        transition: opacity 1s;
+    }
+
+    .fade1-enter,
+    .fade1-leave-to {
+        opacity: 0;
+    }
+
+    .itemtable {
+        cursor: pointer;
+        position: relative;
+        padding-top: 8px;
+        padding-bottom: 6px;
+        color: black;
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        max-width: 100px;
+        padding-left: 10px;
+        padding-right: 20px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background: white;
+        border-width: 1px;
+        border-color: #ddd;
+        border-style: solid;
+        border-bottom: 0px;
+        border-top: 0px;
+        margin-right: 5px;
+        position: relative;
+    }
+
+    th {
+        font-weight: 500;
+    }
+
+    table,
+    table tr th,
+    table tr td {
+        border: 1px solid #eee;
+    }
+
+    tr {
+        height: 40px;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .tables {
+        border: 1px solid #eee;
+        border-right: 0px;
+        position: relative;
+    }
+
+    .tr {
+        border: 0px solid #eee;
+        border-bottom: 1px;
+        display: flex;
+        flex-wrap: nowrap;
+        position: relative;
+    }
+
+    .th {
+        text-align: center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #999;
+        border: 1px solid #eee;
+        border-top: 0px;
+        border-bottom: 0px;
+        border-left: 0px;
+        position: relative;
+    }
+
+
+    .td {
+        text-align: center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #999;
+        border: 1px solid #eee;
+        border-bottom: 0px;
+        border-left: 0px;
+        position: relative;
+    }
+
+    .keySpan {
+        background: #eeec;
+        font-size: 12px;
+        color: #01a3a4;
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .updateTag {
+        height: 8px;
+        width: 8px;
+        border-radius: 360px;
+        background-color: orange;
+        position: absolute;
+        left: 15px;
+        top: 15px;
+        box-shadow: 1px 1px 5px 0.5px #dd5044;
+        cursor: pointer;
+    }
+</style>
+<script>
+    var v = null
+    var http = new Http()
+    var utils = new Utils()
+
+
+    window.onload = function () {
+        /** 监听copy事件 */
+        document.addEventListener("copy", function (e) {
+            //取消默认事件，才能修改复制的值
+            e.preventDefault();
+            //复制的内容
+            var copyTxt = window.getSelection(0).toString()
+            if (copyTxt.length == 0) {
+                if (v.selectItem.url) {
+                    copyTxt = v.selectItem.url
+                    v.ps = "Api已复制成功"
+                    v.showToast = true
+                    setTimeout(function () {
+                        v.showToast = false
+                    }, 3000)
+                }
+            }
+            if (e.clipboardData) {
+                e.clipboardData.setData('text/plain', copyTxt);
+            }
+            else if (window.clipboardData) {
+                window.clipboardData.setData("text", copyTxt);
+            }
+
+        })
+
+        window.onbeforeunload = function (event) {
+            alert("刷新")
+        };
+
+        v = new Vue({
+            el: "#app",
+            data: {
+                windowHeight: 0,
+                windowWidth: 0,
+                data: {},
+                apiList: [],
+                selectItem: {},
+                nowTime: 0,
+                showItem: [],
+                list: [],
+                showList: {},
+                showToast: false,
+                ps: "",
+                searchContent: "",
+                showType: 2,
+                showPopup: false,
+                showPopupType: 1,
+                showPopupContent: [
+                    {
+                        type: 1,
+                        name: "请求设置"
+                    },
+                    {
+                        type: 2,
+                        name: "用户管理"
+                    }
+                ],
+                defalutHeader: [],
+                userInfo: [],
+                editUser: {},
+                saveUser: [],
+                selectUser: {},
+                showPopupSelectUser: false
+            },
+            methods: {
+                toast(msg) {
+                    v.ps = msg
+                    v.showToast = true
+                    setTimeout(function () {
+                        v.showToast = false
+                    }, 3000)
+                },
+                init() {
+                    v.nowTime = new Date().getTime()
+                    var userInfoData = localStorage.getItem('user')
+                    if (!userInfoData) {
+                        userInfoData = "[]"
+                    }
+                    v.saveUser = JSON.parse(userInfoData)
+                },
+                initWindow() {
+                    v.windowHeight = (document.documentElement.clientHeight || document.body.clientHeight) - 50
+                    v.windowWidth = (document.documentElement.clientHeight || document.body.clientHeight) - 50
+
+                },
+                getList() {
+                    http.Get(null, http.url().LIST_JSON,
+                        function (success) {
+                            v.list = success.list
+                            if (v.list.length > 0) {
+                                v.showList = v.list[0]
+                                v.showList.isCheck = true
+                                v.getData(v.showList.url)
+                            }
+                        },
+                        function (error) {
+                            alert(error)
+                        }
+                    )
+                },
+                getData(url) {
+
+                    http.Get(null, url,
+                        function (success) {
+                            v.data = success
+                            v.apiList = v.data.list
+                        },
+                        function (error) {
+                            alert(error)
+                        }
+                    )
+                },
+                loadList(item) {
+                    if (item != v.showList) {
+                        v.showList.isCheck = false
+                        v.showList = item
+                        v.showList.isCheck = true
+                        v.apiList = [];
+                        v.showItem = []
+                        v.selectItem = {}
+                        v.showType = 2
+                        v.getData(v.showList.url)
+                    }
+                },
+                openItem(childrenItem) {
+                    v.selectItem.isCheck = false
+                    childrenItem.isCheck = true
+                    v.selectItem = childrenItem
+                    var isShow = false
+                    v.showItem.forEach(element => {
+                        if (element.group == childrenItem.group && element.item == childrenItem.item) {
+                            isShow = true
+                            return
+                        }
+                    });
+                    if (!isShow) {
+                        v.showItem.push(childrenItem)
+                    }
+                    
+                },
+                formatDate_YYMMDD(date) {
+                    if (!date) {
+                        return ""
+                    }
+                    var date = new Date(Number(date));
+                    var YY = date.getFullYear() + '-';
+                    var MM = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                    var DD = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + " ";
+                    var hh = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+                    var mm = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
+                    // var ss = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+                    return YY + MM + DD + hh + mm
+                },
+                copy(txt) {
+                    var aux = document.createElement("input");
+                    aux.setAttribute("value", txt);
+                    document.body.appendChild(aux);
+                    aux.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(aux);
+                    v.ps = "参数复制成功"
+                    v.showToast = true
+                    setTimeout(function () {
+                        v.showToast = false
+                    }, 3000)
+                },
+                formatJSON(str) {
+                    try {
+                        var data = utils.ProcessObject(JSON.parse(str), 0, false, false, false)
+                        return data
+                    } catch (e) {
+                        return str;
+                    }
+                    this.$forceUpdate()
+                },
+                copyAll(type) {
+                    if (v.selectItem) {
+                        try {
+                            if (type == 1) {
+                                var data = ""
+                                v.selectItem.header.forEach(element => {
+                                    data += element.key + "\t"
+                                })
+                                v.copy(data)
+                            } else {
+                                var data = ""
+                                v.selectItem.parametes.forEach(element => {
+                                    data += element.key + "\t"
+                                })
+                                v.copy(data)
+                            }
+                        } catch (e) {
+                        }
+                    }
+                },
+                closeShowItem(item) {
+                    if (item.isCheck) {
+                        var index = v.showItem.indexOf(item)
+                        item.isCheck = false
+                        v.showItem.splice(index, 1)
+                        if (v.showItem.length == 0) {
+                            v.selectItem = {}
+                            return
+                        }
+                        if (v.showItem.length - 1 >= index) {
+                            v.showItem[index].isCheck = true
+                            v.selectItem = v.showItem[index]
+                        } else {
+                            v.showItem[index - 1].isCheck = true
+                            v.selectItem = v.showItem[index - 1]
+                        }
+
+                    } else {
+                        v.showItem.splice(v.showItem.indexOf(item), 1)
+                    }
+                },
+                request(item) {
+                    if (item) {
+                        if (!item.type) {
+                            return
+                        }
+                        var headers = utils.cloneObj(item.header)
+                        var defalutHeader = []
+                        var defalutHeaderData = localStorage.getItem('defalutHeader')
+                        if (!defalutHeaderData) {
+                            defalutHeaderData = "[]"
+                        }
+                        defalutHeader = JSON.parse(defalutHeaderData)
+                        defalutHeader.forEach(element => {
+                            headers.forEach(element1 => {
+                                if (element.key == element1.key && element.isCheck) {
+                                    if (element.isForce) {
+                                        element1.exampleValue = element.exampleValue
+                                    } else {
+                                        if (element1.exampleValue.length==0) {
+                                            element1.exampleValue = element.exampleValue
+                                        }
+                                    }
+                                }
+                            })
+                        })
+                        if (v.selectUser.header) {
+                            v.selectUser.header.forEach(element => {
+                                headers.forEach(element1 => {
+                                    if (element.key == element1.key && element.isCheck) {
+                                        if (element.isForce) {
+                                            element1.exampleValue = element.exampleValue
+                                        } else {
+                                            if (element1.exampleValue.length==0) {
+                                                element1.exampleValue = element.exampleValue
+                                            }
+                                        }
+                                    }
+                                })
+                            })
+                        }
+
+                        var header = {}
+                        headers.forEach(element => {
+                            if (element.isCheck) {
+                                header[element.key] = element.exampleValue
+                            }
+                        });
+                        if (item.type == "POST") {
+
+                            http.PostTest(item, header, v.data.rootUrl, function (success) {
+                                item.resultExample = ""
+                                setTimeout(function () {
+                                    try {
+                                        item.resultExample = JSON.stringify(JSON.parse(success))
+                                    } catch (e) {
+                                        try {
+                                            JSON.parse(JSON.stringify(success))
+                                            item.resultExample = JSON.stringify(success)
+                                        } catch (e1) {
+                                            item.resultExample = success
+                                        }
+                                    }
+                                }, 300)
+                            }, function (er) {
+                                item.resultExample = ""
+                                setTimeout(function () {
+                                    item.resultExample = er.responseText
+                                }, 300)
+                            })
+                        } else if (item.type == "GET") {
+                            http.GetTest(item, header, v.data.rootUrl, function (success) {
+                                item.resultExample = ""
+                                setTimeout(function () {
+                                    try {
+                                        item.resultExample = JSON.stringify(JSON.parse(success))
+                                    } catch (e) {
+                                        try {
+                                            JSON.parse(JSON.stringify(success))
+                                            item.resultExample = JSON.stringify(success)
+                                        } catch (e1) {
+                                            item.resultExample = success
+                                        }
+                                    }
+                                }, 300)
+                            }, function (er) {
+                                item.resultExample = ""
+                                setTimeout(function () {
+                                    item.resultExample = er.responseText
+                                }, 300)
+                            })
+                        } else {
+                            alert("未知请求方式，暂只支持Post、Get")
+                        }
+                    }
+                },
+                search() {
+                    var searchContent = v.searchContent
+                    v.apiList.forEach(element => {
+                        element.isOpen = false
+                        element.children.forEach(element1 => {
+                            element1.isCheck = false
+                        })
+                    })
+                    v.apiList = [];
+                    v.showItem = []
+                    v.selectItem = {}
+                    if (searchContent.length > 0) {
+                        v.data.list.forEach(element1 => {
+                            var group = utils.cloneObj(element1)
+                            group.isOpen = true
+                            group.children = []
+                            element1.children.forEach(element => {
+                                if (element.item.indexOf(searchContent) != -1 || element.group.indexOf(searchContent) != -1 || element.url.indexOf(searchContent) != -1) {
+                                    group.children.push(element)
+                                }
+                            })
+                            if (group.children.length > 0) {
+                                v.apiList.push(group)
+                            }
+                        })
+                    } else {
+                        v.apiList = v.data.list
+                    }
+                },
+                addNewDefaultHeader() {
+                    v.defalutHeader.push({
+                        isCheck: true,
+                        isForce: true,
+                        key: "",
+                        type: "",
+                        exampleValue: "",
+                        remarks: ""
+                    })
+                    v.$forceUpdate()
+                },
+                removeDefalutHeader(item) {
+                    v.defalutHeader.splice(v.defalutHeader.indexOf(item), 1)
+                    this.$forceUpdate()
+                },
+                saveDefalutheader() {
+                    var hasDataDefaultHeader = []
+                    v.defalutHeader.forEach(element => {
+                        if (element.key.length > 0 && element.type.length > 0) {
+                            hasDataDefaultHeader.push(element)
+                        }
+                    })
+                    console.log(hasDataDefaultHeader)
+                    this.defalutHeader = hasDataDefaultHeader
+                    localStorage.setItem('defalutHeader', JSON.stringify(hasDataDefaultHeader))
+                    v.ps = "保存数据成功"
+                    v.showToast = true
+                    setTimeout(function () {
+                        v.showToast = false
+                    }, 3000)
+                },
+                dismissPopup() {
+                    v.showPopup = false
+                },
+                showMyPopup() {
+                    var defalutHeaderData = localStorage.getItem('defalutHeader')
+                    if (!defalutHeaderData) {
+                        defalutHeaderData = "[]"
+                    }
+
+                    var userInfoData = localStorage.getItem('user')
+                    if (!userInfoData) {
+                        userInfoData = "[]"
+                    }
+                    v.defalutHeader = JSON.parse(defalutHeaderData)
+                    v.userInfo = JSON.parse(userInfoData)
+                    v.showPopup = true
+                },
+                addUser() {
+                    v.userInfo.push({
+                        name: "",
+                        img: "",
+                        createTime: v.formatDate_YYMMDD(new Date()),
+                        header: [],
+                        remarks: ""
+                    })
+                    v.$forceUpdate()
+                },
+                removeUser(item) {
+                    v.userInfo.splice(v.userInfo.indexOf(item), 1)
+                    this.$forceUpdate()
+                },
+                addNewUserHeader() {
+                    if (!v.editUser.name) {
+                        v.toast("请先选择用户")
+                        return
+                    }
+                    v.editUser.header.push({
+                        isCheck: true,
+                        isForce: true,
+                        key: "",
+                        type: "",
+                        exampleValue: "",
+                        remarks: ""
+                    })
+                    v.$forceUpdate()
+                },
+                removeUserHeader(item) {
+                    if (!v.editUser.name) {
+                        v.toast("请先选择用户")
+                        return
+                    }
+                    v.editUser.header.splice(v.editUser.header.indexOf(item), 1)
+                    this.$forceUpdate()
+                },
+                saveUserInfo() {
+                    var hasDataUser = []
+                    v.userInfo.forEach(element => {
+                        if (element.name.length > 0) {
+                            hasDataUser.push(element)
+                            var hasDataDefaultHeader = []
+                            element.header.forEach(element1 => {
+                                if (element1.key.length > 0 && element1.type.length > 0) {
+                                    hasDataDefaultHeader.push(element1)
+                                }
+                            })
+                            element.header = hasDataDefaultHeader
+                        }
+                    })
+                    v.userInfo = hasDataUser
+                    v.saveUser = hasDataUser
+                    v.selectUser = {}
+                    console.log(hasDataUser)
+                    localStorage.setItem('user', JSON.stringify(hasDataUser))
+                    this.$forceUpdate()
+                    v.toast("保存用户成功！")
+                }
+            }
+        })
+        v.init()
+        v.initWindow()
+        v.getList()
+    }
+</script>
+
+<body>
+    <div id="app" style="font-family: 'Microsoft YaHei'">
+        <transition name="fade1">
+            <div :style="{visibility:(showToast?'visible':'hidden') }"
+                style="visibility: hidden;width: 10%;left:45%;text-align: center;border-radius: 180px;background: #ff5e57bb;position: fixed;top: 70px;z-index: 999999;font-size: 12px;padding-top: 7px;padding-bottom: 7px;">
+                {{ps}}
+            </div>
+        </transition>
+        <div
+            style="width: 100%;height: 50px;background: #424242;box-shadow: 1px 1px 7px 0px #2e2e2e;z-index: 3000;position: fixed;top: 0px;display: flex;">
+            <div style="width: 200px;">
+                <span style="font-family: zhankukuhei;font-size: 35px;left: 20px;position: absolute;top: 5px;">觅文</span>
+            </div>
+            <div style="width: 100%;margin: 0 auto;height: 30px;margin-top: 10px;position: relative;">
+                <div style="width: 40%;height:100%;margin-left: 30%;display: flex;position: relative;">
+                    <input placeholder="输入 名称 或 URL" @input="search()" v-model="searchContent"
+                        style="color: #424242;outline:none;width:100%;height:100%;border-radius: 180px;border-style: solid;border-width: 0px;padding-left: 10px;padding-right: 40px;">
+                    <img src="img/搜索.svg" width="24px" style="position: absolute;right: 5px;top:3px">
+                </div>
+            </div>
+            <div style="width: 300px;display: flex;flex-direction:row-reverse;">
+                <img title="小熊猫出品" src="img/熊猫.svg" width="30px" style="margin-right: 20px;position: relative;top:2px">
+                <span style="font-size: 12px;right: 20px;position: relative;top: 20px;">
+                    <b>
+                        v1.0
+                    </b>
+                </span>
+                <img @click="showMyPopup()" title="设置" src="img/设置.svg" width="20px"
+                    style="right: 50px;position: relative;top:2px;cursor: pointer;">
+                <div style="width: 100px;right: 60px;color: white;position: relative;font-size: 12px;padding-top:19px;">
+                    <div title="切换用户" style="cursor: pointer;" @click="showPopupSelectUser=!showPopupSelectUser">
+                        <span v-if="selectUser.name">
+                            {{selectUser.name}}
+                        </span>
+                        <span v-if="!selectUser.name" style="color: #ddd;">
+                            未选择
+                        </span>
+                        <img src="img/下拉.svg" width="12px" style="margin-left: 20px;position: relative;top:2px">
+                    </div>
+                    <div :style="{visibility:(showPopupSelectUser?'visible':'hidden') }"
+                        style="visibility: hidden;width: 200px;height: 300px;position: absolute;left: -50px;top: 55px;border-radius: 10px;background: white;box-shadow: 1px 1px 7px 0px #dfdfdf">
+                        <img src="img/上拉.svg" width="20px" style="position: absolute;top:-10px;left: 90px;">
+                        <div style="margin-top: 5px;width: 100%;height: 265px;overflow: scroll;" class="myScrollbar2">
+                            <div @click="selectUser={};showPopupSelectUser=false"
+                                style="position: relative;cursor: pointer;width: 100%;height: 40px;padding-left: 5px;padding-right: 5px;color: black;display: flex;">
+                                <div style="padding-top: 12px;margin-left: 10px;font-size: 12px;color: #999;">
+                                    不选择用户
+                                </div>
+                                <img v-if="!selectUser.name" src="img/选中.svg" width="14px"
+                                    style="position: absolute;right: 20px;top:13px">
+                            </div>
+                            <div v-for="item in saveUser" @click="selectUser=item;showPopupSelectUser=false"
+                                style="position: relative;cursor: pointer;width: 100%;height: 40px;padding-left: 5px;padding-right: 5px;color: black;display: flex;">
+                                <img src="img/小熊猫.svg" width="35px">
+                                <div style="padding-top: 12px;margin-left: 5px;font-size: 13px;">
+                                    {{item.name}}
+                                </div>
+                                <img v-if="item.name==selectUser.name" src="img/选中.svg" width="14px"
+                                    style="position: absolute;right: 20px;top:13px">
+                            </div>
+                        </div>
+                        <div title="关闭选择用户" @click="showPopupSelectUser=false"
+                            style="cursor: pointer;;position: relative;font-size: 12px;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;background: #ff6b6b;width: 100%;height:30px;text-align: center;">
+                            <b style="position: relative;top:5px">关闭</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="width: 100%;position: relative;margin-top: 50px;display: flex;flex-wrap: nowrap;"
+            :style="{height:windowHeight}">
+            <div style="float: left;width: 300px;height: 100%;background: #424242;">
+                <div
+                    style="display: flex;width: 100%;margin-top: 20px;text-align: center;font-size: 14px;color: white;">
+                    <div style="width: 40%;margin-left: 10%;cursor: pointer;" @click="showType=1">
+                        <div>
+                            目录
+                        </div>
+                        <div v-if="showType==1"
+                            style="width: 80%;height: 4px;border-radius: 180px;background: #dc5549;margin: 0 auto;margin-top: 10px;">
+                        </div>
+                    </div>
+                    <div style="width: 40%;cursor: pointer;" @click="showType=2">
+                        <div>
+                            {{showList.name}}
+                        </div>
+                        <div v-if="showType==2"
+                            style="width: 80%;height: 4px;border-radius: 180px;background: #dc5549;margin: 0 auto;margin-top: 10px;">
+                        </div>
+                    </div>
+                </div>
+                <div style="overflow-y:scroll;overflow-x: hidden;padding-top: 20px;" :style="{height:windowHeight-73}"
+                    class="myScrollbar">
+                    <div v-if="showType==1">
+                        <div v-for="item in list" @click="loadList(item)">
+                            <div :class="{'selectBack':item.isCheck}"
+                                style="width: 100%;padding-top:10px ;padding-bottom: 10px;cursor: pointer;position: relative;display: flex;">
+                                <div v-if="item.isCheck" style="width: 3px;height: 26px;background: #ff6348;">
+                                </div>
+                                <img v-if="!item.isCheck" src="img/目录u.svg" width="14px" style="margin-left: 10px;">
+                                <img v-if="item.isCheck" src="img/目录.svg" width="14px" style="margin-left: 10px;">
+                                <div style="font-size: 13px;color: #aaa;margin-left: 10px;margin-top: 4px;">
+                                    {{item.name}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="showType==2">
+                        <div v-for="item in apiList">
+                            <div @click="item.isOpen=!item.isOpen"
+                                style="width: 100%;font-size: 14px;color: #aaa;position: relative;cursor: pointer;background-color: #ffffff11;padding-top: 10px;padding-bottom: 10px;">
+                                <img v-if="!item.isOpen" src="img/组.svg" width="18px"
+                                    style="position: relative;top: 3px;margin-left: 10px;">
+                                <img v-if="item.isOpen" src="img/打开.svg" width="18px"
+                                    style="position: relative;top: 3px;margin-left: 10px;">
+                                <span style="margin-left: 5px;">
+                                    {{item.group}}
+                                </span>
+                                <img v-if="(nowTime-item.lastApiCreateTime)/1000<data.newApiSignTime" src="img/新.svg"
+                                    width="20px" style="position: absolute;right: 10px;top: 0px;">
+                                <div v-if="(nowTime-item.changeTime)/1000<data.newApiSignTime"
+                                    style="height: 5px;width: 5px;border-radius: 360px;background-color: orange;position: absolute;right: 35px;top: 5px;">
+                                </div>
+                            </div>
+                            <transition name="fade">
+                                <div v-show="item.isOpen">
+                                    <div v-for="apiItem in item.children" @click="openItem(apiItem)"
+                                        :class="{'selectBack':apiItem.isCheck}"
+                                        style="width: 100%;padding-top:10px ;padding-bottom: 10px;cursor: pointer;position: relative;">
+                                        <div v-if="apiItem.isCheck"
+                                            style="width: 3px;height: 26px;background: #ff6348;position: absolute;top:5px">
+                                        </div>
+                                        <div class="mallText"
+                                            :style="{color: (apiItem.type=='POST'? '#ff6348' : '#4cd137')}"
+                                            style="margin-left: 5px; width: 30px;float: left;font-size:13px;border-radius: 8px;padding-left: 6px;padding-right: 6px;">
+                                            <b>{{apiItem.type}}</b>
+                                        </div>
+                                        <div style="float: left;font-size: 13px;color: #aaa;left: 10px;">
+                                            {{apiItem.item}}
+                                        </div>
+                                        <img v-if="(nowTime-apiItem.createTime)/1000<data.newApiSignTime"
+                                            src="img/新.svg" width="20px"
+                                            style="position: absolute;right: 10px;top: 0px;">
+                                        <div v-if="(nowTime-apiItem.changeTime)/1000<data.newApiSignTime"
+                                            style="height: 5px;width: 5px;border-radius: 360px;background-color: orange;position: absolute;right: 35px;top: 5px;">
+                                        </div>
+                                        <div style="clear: both;"></div>
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="float: left;height: 100%;background-color: #eee;width: 100%;width: 100%;">
+                <div id="tableView"
+                    style="width: 95%;height:30px;margin: 0 auto;margin-top: 10px;overflow:auto;overflow-y: hidden;overflow-x: auto;white-space: nowrap;"
+                    class="myScrollbar2">
+                    <div v-for="item in showItem" @mouseenter="item.showClose=true;$forceUpdate()"
+                        @click="openItem(item)" @mouseleave="item.showClose=false;$forceUpdate()" :title="item.group"
+                        class="itemtable">
+                        <div v-if="item.isCheck" :style="{background: (item.type=='POST'? '#ff6348' : '#6ab04c')}"
+                            style="right:0px;left:0px;width: 100%;height: 3px;border-top-right-radius: 1px;border-top-left-radius: 1px;position: absolute;top: 0px;">
+                        </div>
+                        <div v-if="!item.isCheck"
+                            style="right:0px;left:0px;width: 100%;height: 3px;border-top-right-radius: 1px;border-top-left-radius: 1px;background: #ddd;position: absolute;top: 0px;">
+                        </div>
+                        <span>
+                            {{item.item}}
+                        </span>
+                        <img v-if="item.showClose" @click.stop="closeShowItem(item)" src="img/关闭.svg" width="10px"
+                            style="position: absolute;right: 5px;top:10px" title="关闭">
+                    </div>
+                </div>
+                <div style="background:white;border-top-left-radius: 10px;border-top-right-radius: 10px;overflow-x: hidden;overflow-y: scroll;height: 100%;width: 100%;"
+                    :style="{height:windowHeight-41}" class="myScrollbar">
+                    <div
+                        style="margin: 0 auto;border-radius: 180px;border-width: 1px;border-style: solid;border-color: #ddd;width: 98%;height: 30px;margin-top: 20px;display: flex;flex-wrap: nowrap;">
+                        <div
+                            style="float: left;width: 100px;text-align: center;font-size: 12px;color: #999;margin-top: 7px;">
+                            {{selectItem.group}}
+                        </div>
+                        <div style="width: 1px;height: 100%;float: left;background: #ddd;"></div>
+                        <div
+                            style="float: left;padding-left:10px;font-size: 14px;color: #333;margin-top: 5px;width: 90%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                            {{selectItem.item}}
+                        </div>
+                        <div style="width: 1px;height: 100%;float: right;background: #ddd;"></div>
+                        <div
+                            style="float: right;width: 60px;text-align: center;font-size: 12px;color: #999;margin-top: 7px;position: relative;">
+                            {{selectItem.createUser}}
+                        </div>
+                        <div style="width: 1px;height: 100%;float: right;background: #ddd;"></div>
+                        <div
+                            style="float: right;width: 140px;text-align: center;font-size: 12px;color: #999;margin-top: 7px;position: relative;">
+                            {{formatDate_YYMMDD( selectItem.createTime)}}
+                        </div>
+
+                    </div>
+                    <div style="clear: both;"></div>
+                    <div
+                        style="margin: 0 auto;width: 98%;height: 36px;margin-top: 20px;display: flex;flex-wrap: nowrap;">
+                        <div :style="{color: (selectItem.type=='POST'? '#ff6348' : '#4cd137')}"
+                            style="width: 100px;text-align: center;font-size: 14px;;position: relative;padding-top: 9px;border-top-left-radius: 180px;border-bottom-left-radius: 180px;border-width: 1px;border-style: solid;border-color: #ddd;">
+                            <b>
+                                {{selectItem.type}}
+                            </b>
+                        </div>
+                        <input v-model="selectItem.url" placeholder="请求参数"
+                            style="border-width: 1px;border-style: solid;border-color: #ddd;border-right: 0px;border-left: 0px;padding-left: 10px;outline:none;font-size: 15px;color: black;width: 100%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;height: 100%;position: relative;">
+                        <div @click="request(selectItem)"
+                            style="cursor: pointer;padding-top: 8px;width: 150px;text-align: center;font-size: 14px;color: #fff;position: relative;border-top-right-radius: 180px;border-bottom-right-radius: 180px;background: #F97F51">
+                            <span style="margin-left: 20px;">模拟请求</span>
+                            <img src="img/请求.svg" width="16px" style="position: absolute;left: 20px;top:11px">
+                        </div>
+                    </div>
+                    <div
+                        style="border-radius: 5px;background: #f6f6f6;width: 96%;margin: 0 auto;margin-top:20px;font-size: 12px;color: black;padding-bottom: 20px;">
+                        <div style="width: 97%;margin: 0 auto;margin-left:45px;position: relative;padding-top: 15px;">
+                            <img src="img/介绍.svg" height="19" style="position: absolute;left: -25px;top:14px">
+                            API介绍
+                        </div>
+                        <div
+                            style="width: 97%;margin: 0 auto;background: white;height: 50px;margin-top: 15px;padding: 5px;font-size: 12px;color: black;">
+                            <span v-if="!selectItem.remarks" style="color: #aaa;">
+                                介绍内容。
+                            </span>
+                            <span v-if="selectItem.remarks">
+                                {{selectItem.remarks}}
+                            </span>
+                        </div>
+                        <div style="width: 97%;margin: 0 auto;margin-top: 20px;">
+                            <span title="复制全部参数" @click="copyAll(1)"
+                                style="padding:5 10;background: #ff3f34;color: white;font-size: 12px;padding-right: 30px;position: relative;cursor: pointer;">
+                                Header
+                                <img src="img/复制.svg" width="14px" style="position: absolute;right: 7px;top:7px">
+                            </span>
+                            <div
+                                style="width: 100%;margin: 0 auto;background: white;font-size: 12px;color: black;margin-top: 5px;padding-top: 10px;padding-bottom: 10px;">
+                                <div style="width: 97%;margin:0 auto;" class="tables">
+                                    <div style="width: 100%;" class="tr">
+                                        <div style="width: 9%;" class="th"></div>
+                                        <div style="width: 15%;" class="th">参数名</div>
+                                        <div style="width: 30%;" class="th">描述</div>
+                                        <div style="width: 15%;" class="th">类型</div>
+                                        <div style="width: 15%;" class="th">必填</div>
+                                        <div style="width: 18%;" class="th">实例值</div>
+                                    </div>
+                                    <div v-for="headerItem in selectItem.header"
+                                        style="width: 100%;color: #3d3d3d;font-size: 12px;font-weight: 500;" class="tr">
+                                        <div style="width: 9%;cursor: pointer;" class="td"
+                                            @click="headerItem.isCheck=!headerItem.isCheck;$forceUpdate()">
+                                            <img v-if="!headerItem.isCheck" src="img/不参与.svg"
+                                                style="width: 30px;height: 20px;margin: 0 auto;">
+                                            <img v-if="headerItem.isCheck" src="img/参与.svg"
+                                                style="width: 30px;height: 20px;margin: 0 auto;">
+                                        </div>
+                                        <div style="width: 15%;" class="td">
+                                            <span class="keySpan" @click="copy(headerItem.key)">
+                                                <b>
+                                                    {{headerItem.key}}
+                                                </b>
+                                            </span>
+                                        </div>
+                                        <div style="width: 30%;color:#666" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(headerItem.changeInfo.remarks)"
+                                                v-if="(nowTime-headerItem.changeInfo.remarks)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <span v-if="headerItem.remarks.length>0">
+                                                {{headerItem.remarks}}
+                                            </span>
+                                            <span v-if="headerItem.remarks.length==0" style="color: #ddd;">
+                                                暂无描述
+                                            </span>
+                                        </div>
+                                        <div style="width: 15%;color:#fc5c65" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(headerItem.changeInfo.type)"
+                                                v-if="(nowTime-headerItem.changeInfo.type)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <b>
+                                                {{headerItem.type}}
+                                            </b>
+                                        </div>
+                                        <div style="width: 15%;" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(headerItem.changeInfo.fill)"
+                                                v-if="(nowTime-headerItem.changeInfo.fill)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <img v-if="!headerItem.fill" src="img/非必填.svg" width="16px">
+                                            <img v-if="headerItem.fill" src="img/必填.svg" width="16px">
+                                        </div>
+                                        <div style="width: 18%;position: relative;" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(headerItem.changeInfo.exampleValue)"
+                                                v-if="(nowTime-headerItem.changeInfo.exampleValue)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <input v-model="headerItem.exampleValue" placeholder="实例值"
+                                                style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                            <img src="img/编辑.svg" width="20px" style="position: absolute;right: 5px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width: 97%;margin: 0 auto;margin-top: 20px;">
+                            <span title="复制全部参数" @click="copyAll(2)"
+                                style="padding:5 10;background: #ff3f34;color: white;font-size: 12px;padding-right: 30px;position: relative;cursor: pointer;">
+                                Body
+                                <img src="img/复制.svg" width="14px" style="position: absolute;right: 7px;top:7px">
+                            </span>
+                            <div
+                                style="width: 100%;margin: 0 auto;background: white;font-size: 12px;color: black;margin-top: 5px;padding-top: 10px;padding-bottom: 10px;">
+                                <div style="width: 97%;margin:0 auto;" class="tables">
+                                    <div style="width: 100%;" class="tr">
+                                        <div style="width: 9%;" class="th"></div>
+                                        <div style="width: 15%;" class="th">参数名</div>
+                                        <div style="width: 30%;" class="th">描述</div>
+                                        <div style="width: 15%;" class="th">类型</div>
+                                        <div style="width: 15%;" class="th">必填</div>
+                                        <div style="width: 18%;" class="th">实例值</div>
+                                    </div>
+                                    <div v-for="parametesItem in selectItem.parametes"
+                                        style="width: 100%;color: #3d3d3d;font-size: 12px;font-weight: 500;" class="tr">
+                                        <div style="width: 9%;cursor: pointer;" class="td"
+                                            @click="parametesItem.isCheck=!parametesItem.isCheck;$forceUpdate()">
+                                            <img v-if="!parametesItem.isCheck" src="img/不参与.svg"
+                                                style="width: 30px;height: 20px;margin: 0 auto;">
+                                            <img v-if="parametesItem.isCheck" src="img/参与.svg"
+                                                style="width: 30px;height: 20px;margin: 0 auto;">
+                                        </div>
+                                        <div style="width: 15%;" class="td">
+                                            <span class="keySpan" @click="copy(parametesItem.key)">
+                                                <b>
+                                                    {{parametesItem.key}}
+                                                </b>
+                                            </span>
+                                        </div>
+                                        <div style="width: 30%;color:#666" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(parametesItem.changeInfo.remarks)"
+                                                v-if="(nowTime-parametesItem.changeInfo.remarks)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <span v-if="parametesItem.remarks.length>0">
+                                                {{parametesItem.remarks}}
+                                            </span>
+                                            <span v-if="parametesItem.remarks.length==0" style="color: #ddd;">
+                                                暂无描述
+                                            </span>
+                                        </div>
+                                        <div style="width: 15%;color:#fc5c65" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(parametesItem.changeInfo.type)"
+                                                v-if="(nowTime-parametesItem.changeInfo.type)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <b>
+                                                {{parametesItem.type}}
+                                            </b>
+                                        </div>
+                                        <div style="width: 15%;" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(parametesItem.changeInfo.fill)"
+                                                v-if="(nowTime-parametesItem.changeInfo.fill)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <img v-if="!parametesItem.fill" src="img/非必填.svg" width="16px">
+                                            <img v-if="parametesItem.fill" src="img/必填.svg" width="16px">
+                                        </div>
+                                        <div style="width: 18%;position: relative;" class="td">
+                                            <div :title="'更新时间'+formatDate_YYMMDD(parametesItem.changeInfo.exampleValue)"
+                                                v-if="(nowTime-parametesItem.changeInfo.exampleValue)/1000<data.newApiSignTime"
+                                                class="updateTag">
+                                            </div>
+                                            <input v-model="parametesItem.exampleValue" placeholder="实例值"
+                                                style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                            <img src="img/编辑.svg" width="20px" style="position: absolute;right: 5px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width: 97%;margin: 0 auto;margin-left:45px;position: relative;padding-top: 15px;">
+                            <img src="img/网络.svg" height="19px" width="19px"
+                                style="position: absolute;left: -25px;top:14px">
+                            请求结果
+                        </div>
+                        <div
+                            style="width: 97%;margin: 0 auto;background: white;margin-top: 15px;padding: 5px;font-size: 12px;color: black;padding-bottom: 20px;">
+                            <span v-if="!selectItem.resultExample" style="color: #aaa;">
+                                请求结果实例。
+                            </span>
+                            <transition name="fade">
+                                <span v-show="selectItem.resultExample" style="font-size: 12px;">
+                                    <pre v-html="formatJSON(selectItem.resultExample)"
+                                        style="line-height:17px;font-size: 13px;font-family: Monaco,Menlo,Ubuntu Mono,Consolas,source-code-pro,monospace;">
+                                </pre>
+                                </span>
+                            </transition>
+                        </div>
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+
+        <div @click.stop="dismissPopup()" :style="{visibility:(showPopup?'visible':'hidden') }"
+            style="visibility: hidden;position: fixed;width: 100%;height:100%;background: #00000044;z-index: 9999;top:0px;right: 0px;">
+            <div @click.stop=""
+                style="border-radius: 10px;background: white;width: 60%;height:80%;margin: 0 auto;margin-top: 30px;display: flex;position: relative;">
+                <div style="position: absolute;top:10px;right: 15px;cursor: pointer;z-index: 9999;">
+                    <img @click="dismissPopup()" title="关闭" src="img/关闭_1.svg" onMouseOut="this.src='img/关闭_1.svg'"
+                        onMouseOver="this.src='img/关闭_2.svg'" width="20px">
+                </div>
+                <div style="background: #f5f5f5;border-top-left-radius: 10px;border-bottom-left-radius: 10px;width: 100px;height: 100%;overflow: scroll;"
+                    class="myScrollbar2">
+                    <div
+                        style="width: 100%;padding-top:10px ;padding-bottom: 10px;position: relative;padding-top: 20px;padding-bottom: 20px;">
+                        <div v-for="item in showPopupContent" @click="showPopupType=item.type"
+                            :style="{background:item.type==showPopupType ?'white' :'' }"
+                            style="display: flex;width: 100px;height: 60px;cursor: pointer;">
+                            <div v-if="item.type==showPopupType"
+                                style="width: 3px;height: 40px;background: #ff6348;margin-top: 10px;position: absolute;">
+                            </div>
+                            <div
+                                style="font-size: 12px;color: #4a4a4a;left: 10px;padding-top: 22px;margin-left: 5px;margin-left: 10px;">
+                                <b>{{item.name}}</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 100%;height: 100%;padding-left: 30px;margin-right: 20px;position: relative;">
+                    <div v-if="showPopupType==1">
+                        <div style="margin-top: 20px;font-size: 20px;color: black;">
+                            <b> 默认Header参数</b>
+                        </div>
+                        <div style="font-size: 12px;color: #ccc;margin-top: 5px;">
+                            默认参数如果强制的话，当Api自带参数跟默认参数相同时，则Api自带参数的value自动替换成默认参数的value。
+                        </div>
+                        <div style="width: 97%;margin-top: 30px;">
+                            <div style="position:relative;">
+                                <div>
+                                    <span
+                                        style="padding:5 10;background: #ff3f34;color: white;font-size: 12px;padding-right: 10px;position: relative;">
+                                        Header（{{defalutHeader.length}})
+                                    </span>
+                                </div>
+                                <div style="position:absolute; right: 30px;top: -9px;cursor: pointer;"
+                                    @click="addNewDefaultHeader()">
+                                    <img src="img/添加.svg" width="30px" title="添加Header">
+                                </div>
+                            </div>
+                            <div
+                                style="width: 100%;margin: 0 auto;background: white;font-size: 12px;color: black;margin-top: 5px;padding-bottom: 10px;">
+                                <div style="width: 100%;margin:0 auto;" class="tables">
+                                    <div style="width: 100%;" class="tr">
+                                        <div style="width: 10%;" class="th">启用</div>
+                                        <div style="width: 10%;" class="th">强制</div>
+                                        <div style="width: 15%;" class="th">参数名</div>
+                                        <div style="width: 15%;" class="th">类型</div>
+                                        <div style="width: 20%;" class="th">默认值</div>
+                                        <div style="width: 20%;" class="th">备注</div>
+                                        <div style="width: 10%;" class="th">操作</div>
+                                    </div>
+                                    <div style="overflow: scroll;max-height:70%" class="myScrollbar2">
+                                        <div v-for="headerItem in defalutHeader"
+                                            style="width: 100%;color: #3d3d3d;font-size: 12px;font-weight: 500;"
+                                            class="tr">
+                                            <div style="width: 10%;cursor: pointer;" class="td"
+                                                @click="headerItem.isCheck=!headerItem.isCheck;$forceUpdate()">
+                                                <img v-if="!headerItem.isCheck" src="img/不参与.svg"
+                                                    style="width: 30px;height: 20px;margin: 0 auto;">
+                                                <img v-if="headerItem.isCheck" src="img/参与.svg"
+                                                    style="width: 30px;height: 20px;margin: 0 auto;">
+                                            </div>
+                                            <div style="width: 10%;cursor: pointer;" class="td"
+                                                @click="headerItem.isForce=!headerItem.isForce;$forceUpdate()">
+                                                <img v-if="!headerItem.isForce" src="img/不参与.svg"
+                                                    style="width: 30px;height: 20px;margin: 0 auto;">
+                                                <img v-if="headerItem.isForce" src="img/参与.svg"
+                                                    style="width: 30px;height: 20px;margin: 0 auto;">
+                                            </div>
+                                            <div style="width: 15%;" class="td">
+                                                <input v-model="headerItem.key" placeholder="字段名称"
+                                                    style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                <img src="img/编辑.svg" width="20px"
+                                                    style="position: absolute;right: 5px;">
+                                            </div>
+                                            <div style="width: 15%;" class="td">
+                                                <input v-model="headerItem.type" placeholder="类型"
+                                                    style="font-weight: 900;width: 95%;height: 100%;color:#fc5c65;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                <img src="img/编辑.svg" width="20px"
+                                                    style="position: absolute;right: 5px;">
+                                            </div>
+                                            <div style="width: 20%;position: relative;" class="td">
+                                                <input v-model="headerItem.exampleValue" placeholder="实例值"
+                                                    style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                <img src="img/编辑.svg" width="20px"
+                                                    style="position: absolute;right: 5px;">
+                                            </div>
+                                            <div style="width: 20%;color:#666" class="td">
+                                                <input v-model="headerItem.remarks" placeholder="备注信息"
+                                                    style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                <img src="img/编辑.svg" width="20px"
+                                                    style="position: absolute;right: 5px;">
+                                            </div>
+                                            <div style="width: 10%;color:#fc5c65;cursor: pointer;" title="移除"
+                                                class="td">
+                                                <img src="img/移除.svg" width="20px"
+                                                    @click="removeDefalutHeader(headerItem)">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div @click="saveDefalutheader()"
+                            style="cursor: pointer;bottom: 10px;right: 5px;left:5px;position: absolute;color: white;font-size: 12px;display: flex;">
+                            <div
+                                style="width: 100%;text-align: right;color: #999;padding-top: 10px;margin-right: 20px;">
+                                参数名跟类型<span style="color: orangered;">必填</span>，其中某一个为空保存时默认删除
+                            </div>
+                            <div
+                                style="border-radius: 5px;background: #eb7f50;padding: 8px 0px;width:100px;text-align: center;">
+                                <b>保存</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="showPopupType==2">
+                        <div style="margin-top: 20px;font-size: 20px;color: black;display: flex;">
+                            <b> 用户列表</b>
+                            <div style="cursor: pointer;margin-left: 10px;" @click="addUser()">
+                                <img src="img/添加.svg" width="28px" title="添加用户">
+                            </div>
+                        </div>
+                        <div style="font-size: 12px;color: #ccc;margin-top: 5px;">
+                            选择用户后，用户所添加的Header参数将会一起提交。
+                        </div>
+                        <div
+                            style="width: 97%;background: white;font-size: 12px;color: black;margin-top: 15px;padding-bottom: 10px;">
+                            <div style="width: 100%;margin:0 auto;" class="tables">
+                                <div style="width: 100%;" class="tr">
+                                    <div style="width: 10%;font-size: 14px;" class="th">
+                                        <b>
+                                            {{userInfo.length}}
+                                        </b>
+                                    </div>
+                                    <div style="width: 10%;" class="th">头像</div>
+                                    <div style="width: 20%;" class="th">名称</div>
+                                    <div style="width: 15%;" class="th">创建日期</div>
+                                    <div style="width: 15%;" class="th">参数数量</div>
+                                    <div style="width: 20%;" class="th">备注</div>
+                                    <div style="width: 10%;" class="th">操作</div>
+                                </div>
+                                <div style="overflow: scroll;max-height:20%" class="myScrollbar2">
+                                    <div v-for="user in userInfo"
+                                        style="width: 100%;color: #3d3d3d;font-size: 12px;font-weight: 500;" class="tr">
+                                        <div style="width: 10%;cursor: pointer;" class="td"
+                                            @click="editUser=user;$forceUpdate()">
+                                            <img v-if="editUser.name!=user.name" src="img/不参与.svg"
+                                                style="width: 30px;height: 20px;margin: 0 auto;">
+                                            <img v-if="editUser.name==user.name" src="img/参与.svg"
+                                                style="width: 30px;height: 20px;margin: 0 auto;">
+                                        </div>
+                                        <div style="width: 10%;cursor: pointer;" class="td"
+                                            @click="toast('头像做不动了，先用着吧')">
+                                            <!-- <img :src="user.img==''? 'img/选择头像.svg' : '123'" width="20px" height="20px"> -->
+                                            <img src="img/小熊猫.svg" width="20px">
+                                        </div>
+                                        <div style="width: 20%;cursor: pointer;" class="td">
+                                            <input v-model="user.name" placeholder="用户昵称"
+                                                style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                            <img src="img/编辑.svg" width="20px" style="position: absolute;right: 5px;">
+                                        </div>
+                                        <div style="width: 15%;font-size: 13px;color: black;" class="td">
+                                            {{user.createTime}}
+                                        </div>
+                                        <div style="width: 15%;color:#fc5c65;font-size: 14px;" class="td">
+                                            <b>
+                                                {{user.header.length}}
+                                            </b>
+                                        </div>
+                                        <div style="width: 20%;color:#666" class="td">
+                                            <input v-model="user.remarks" placeholder="备注信息"
+                                                style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                            <img src="img/编辑.svg" width="20px" style="position: absolute;right: 5px;">
+                                        </div>
+                                        <div style="width: 10%;color:#fc5c65;cursor: pointer;" title="移除" class="td">
+                                            <img src="img/移除.svg" width="20px" @click="removeUser(user)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <div style="width: 100%;margin-top: 30px;">
+                                    <div style="position:relative;">
+                                        <div>
+                                            <span
+                                                style="padding:5 10;background: #ff3f34;color: white;font-size: 12px;padding-right: 10px;position: relative;">
+                                                Header（{{editUser.header? editUser.header.length :0}})
+                                            </span>
+                                        </div>
+                                        <div style="position:absolute; right: 30px;top: -9px;cursor: pointer;"
+                                            @click="addNewUserHeader()">
+                                            <img src="img/添加.svg" width="30px" title="添加Header">
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="width: 100%;margin: 0 auto;background: white;font-size: 12px;color: black;margin-top: 5px;padding-bottom: 10px;">
+                                        <div style="width: 100%;margin:0 auto;" class="tables">
+                                            <div style="width: 100%;" class="tr">
+                                                <div style="width: 10%;" class="th">启用</div>
+                                                <div style="width: 10%;" class="th">强制</div>
+                                                <div style="width: 15%;" class="th">参数名</div>
+                                                <div style="width: 15%;" class="th">类型</div>
+                                                <div style="width: 20%;" class="th">默认值</div>
+                                                <div style="width: 20%;" class="th">备注</div>
+                                                <div style="width: 10%;" class="th">操作</div>
+                                            </div>
+                                            <div style="overflow: scroll;max-height:40%" class="myScrollbar2">
+                                                <div v-for="headerItem in editUser.header"
+                                                    style="width: 100%;color: #3d3d3d;font-size: 12px;font-weight: 500;"
+                                                    class="tr">
+                                                    <div style="width: 10%;cursor: pointer;" class="td"
+                                                        @click="headerItem.isCheck=!headerItem.isCheck;$forceUpdate()">
+                                                        <img v-if="!headerItem.isCheck" src="img/不参与.svg"
+                                                            style="width: 30px;height: 20px;margin: 0 auto;">
+                                                        <img v-if="headerItem.isCheck" src="img/参与.svg"
+                                                            style="width: 30px;height: 20px;margin: 0 auto;">
+                                                    </div>
+                                                    <div style="width: 10%;cursor: pointer;" class="td"
+                                                        @click="headerItem.isForce=!headerItem.isForce;$forceUpdate()">
+                                                        <img v-if="!headerItem.isForce" src="img/不参与.svg"
+                                                            style="width: 30px;height: 20px;margin: 0 auto;">
+                                                        <img v-if="headerItem.isForce" src="img/参与.svg"
+                                                            style="width: 30px;height: 20px;margin: 0 auto;">
+                                                    </div>
+                                                    <div style="width: 15%;" class="td">
+                                                        <input v-model="headerItem.key" placeholder="字段名称"
+                                                            style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                        <img src="img/编辑.svg" width="20px"
+                                                            style="position: absolute;right: 5px;">
+                                                    </div>
+                                                    <div style="width: 15%;" class="td">
+                                                        <input v-model="headerItem.type" placeholder="类型"
+                                                            style="font-weight: 900;width: 95%;height: 100%;color:#fc5c65;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                        <img src="img/编辑.svg" width="20px"
+                                                            style="position: absolute;right: 5px;">
+                                                    </div>
+                                                    <div style="width: 20%;position: relative;" class="td">
+                                                        <input v-model="headerItem.exampleValue" placeholder="实例值"
+                                                            style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                        <img src="img/编辑.svg" width="20px"
+                                                            style="position: absolute;right: 5px;">
+                                                    </div>
+                                                    <div style="width: 20%;color:#666" class="td">
+                                                        <input v-model="headerItem.remarks" placeholder="备注信息"
+                                                            style="width: 95%;height: 100%;outline: none;border-width: 0px;margin: 0 auto;text-align: center;">
+                                                        <img src="img/编辑.svg" width="20px"
+                                                            style="position: absolute;right: 5px;">
+                                                    </div>
+                                                    <div style="width: 10%;color:#fc5c65;cursor: pointer;" title="移除"
+                                                        class="td">
+                                                        <img src="img/移除.svg" width="20px"
+                                                            @click="removeUsertHeader(headerItem)">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div @click="saveUserInfo()"
+                                        style="cursor: pointer;bottom: 10px;right: 5px;left:5px;position: absolute;color: white;font-size: 12px;display: flex;">
+                                        <div
+                                            style="width: 100%;text-align: right;color: #999;padding-top: 10px;margin-right: 20px;">
+                                            用户昵称<span style="color: orangered;">必填</span>，
+                                            header参数名跟类型<span style="color: orangered;">必填</span>，其中某一个为空保存时默认删除
+                                        </div>
+                                        <div
+                                            style="border-radius: 5px;background: #4bb992;padding: 8px 0px;width:100px;text-align: center;">
+                                            <b>保存</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

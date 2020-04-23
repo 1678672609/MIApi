@@ -1,0 +1,58 @@
+body {
+
+    margin: 0px;
+    color: #fff;
+}
+
+/* .Canvas {
+    font:14px/18px 'consolas';
+    background-color: #ECECEC;
+    color: #000000;
+    border: solid 1px #CECECE;
+} */
+.ObjectBrace {
+    color: #000;
+}
+
+.ArrayBrace {
+    color: #000;
+}
+
+.PropertyName {
+    color: #B33771;
+    font-weight: bold;
+}
+
+.String {
+    color: #e58e26;
+}
+
+.Number {
+    color: #ff6348;
+    font-weight: 600;
+}
+
+.Boolean {
+    color: #5352ed;
+    font-weight: 600;
+}
+
+.Function {
+    color: #e58e26;
+    font-weight: 600;
+}
+
+.Null {
+    color: #f00;
+    font-weight: 600;
+}
+
+.Comma {
+    color: #000000;
+    font-weight: 600;
+}
+
+PRE.CodeContainer {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
